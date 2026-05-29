@@ -1,4 +1,12 @@
 :host {
   display: block;
   width: 100%;
+  height: 100%;
 }
+
+// El div interno del mapa también necesita altura definida
+div[id] {
+  height: 280px;
+  width: 100%;
+  min-height: 200px;
+}

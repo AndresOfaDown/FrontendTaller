@@ -3,6 +3,7 @@
   <div class="user-info">
     <span class="username">{{ username }}</span>
     <span class="email">{{ email }}</span>
+    <span class="role" *ngIf="role">{{ role }}</span>
   </div>
   <div class="dropdown-menu" *ngIf="showMenu">
     <button (click)="onProfile()">Mi Perfil</button>

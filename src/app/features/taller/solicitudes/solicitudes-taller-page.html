@@ -1,0 +1,35 @@
+<div class="solicitudes-page">
+  <div class="header">
+    <h2>Solicitudes de Servicio</h2>
+    <button class="btn btn-secondary" (click)="cargarSolicitudes()" [disabled]="isLoading">
+      <i class="fa-solid fa-rotate-right"></i> Actualizar
+    </button>
+  </div>
+
+  <div *ngIf="isLoading" class="loading-container">
+    <app-loading-spinner></app-loading-spinner>
+  </div>
+
+  <div *ngIf="!isLoading && solicitudes.length === 0" class="empty-state">
+    <i class="fa-solid fa-inbox fa-3x"></i>
+    <p>No hay solicitudes de servicio recientes</p>
+  </div>
+
+  <div *ngIf="!isLoading && solicitudes.length > 0" class="solicitudes-list">
+    <div class="solicitud-card" *ngFor="let s of solicitudes">
+      <div class="card-header">
+        <span class="estado-badge" [ngClass]="s.estado">{{ s.estado | uppercase }}</span>
+        <span class="fecha">{{ s.fecha | date:'short' }}</span>
+      </div>
+      <div class="card-body">
+        <p><strong>Sugerido por:</strong> {{ s.sugerido_por }}</p>
+        <p *ngIf="s.distancia_km !== undefined"><strong>Distancia:</strong> {{ s.distancia_km | number:'1.1-2' }} km</p>
+        <p *ngIf="s.comentario"><strong>Comentario:</strong> {{ s.comentario }}</p>
+      </div>
+      <div class="card-actions" *ngIf="s.estado === 'pendiente' || s.estado === 'sugerido'">
+        <button class="btn btn-success" (click)="aceptarSolicitud(s.id)">Aceptar</button>
+        <button class="btn btn-danger" (click)="rechazarSolicitud(s.id)">Rechazar</button>
+      </div>
+    </div>
+  </div>
+</div>

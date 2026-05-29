@@ -11,6 +11,7 @@ import { CommonModule } from '@angular/common';
 export class UserAvatar {
   @Input() username: string = '';
   @Input() email: string = '';
+  @Input() role: string = '';
   @Input() photoUrl: string | null = null;
   @Output() profileClick = new EventEmitter<void>();
   @Output() logoutClick = new EventEmitter<void>();

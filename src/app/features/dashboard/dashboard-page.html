@@ -7,6 +7,7 @@
     <app-user-avatar
       [username]="user?.username || 'Usuario'"
       [email]="user?.email || ''"
+      [role]="displayRole"
       [photoUrl]="user?.url_img_perfil ?? null"
       (profileClick)="goToProfile()"
       (logoutClick)="logout()"
@@ -40,7 +41,7 @@
             </div>
             <div *ngIf="!loadingTalleres && selectedTallerId">
               <app-perfil-taller-page *ngIf="currentView === 'taller_perfil'" [tallerId]="selectedTallerId"></app-perfil-taller-page>
-              <app-taller-view *ngIf="currentView === 'taller_solicitudes'"></app-taller-view>
+              <app-solicitudes-taller-page *ngIf="currentView === 'taller_solicitudes'" [tallerId]="selectedTallerId"></app-solicitudes-taller-page>
               <app-servicios-taller-page *ngIf="currentView === 'taller_servicios'" [tallerId]="selectedTallerId"></app-servicios-taller-page>
               <app-vehiculos-taller-page *ngIf="currentView === 'taller_vehiculos'" [tallerId]="selectedTallerId"></app-vehiculos-taller-page>
               <app-tecnicos-page *ngIf="currentView === 'taller_tecnicos'" [tallerId]="selectedTallerId"></app-tecnicos-page>
@@ -52,7 +53,8 @@
         <!-- Sección sistema -->
         <ng-container *ngIf="activeTabId === 'sistema'">
           <app-especialidades-page *ngIf="currentView === 'sistema_especialidades'"></app-especialidades-page>
-          <app-sistema-view *ngIf="currentView === 'sistema_usuarios'"></app-sistema-view>
+          <app-usuarios-page *ngIf="currentView === 'sistema_usuarios'"></app-usuarios-page>
+          <app-bitacora-page *ngIf="currentView === 'sistema_bitacora'"></app-bitacora-page>
           <app-categorias-incidentes-page *ngIf="currentView === 'sistema_categorias-incidentes'"></app-categorias-incidentes-page>
           <app-incidentes-page *ngIf="currentView === 'sistema_incidentes'"></app-incidentes-page>
           <app-talleres-admin-page *ngIf="currentView === 'sistema_talleres'"></app-talleres-admin-page>

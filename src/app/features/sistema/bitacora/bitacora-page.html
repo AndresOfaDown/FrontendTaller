@@ -1,0 +1,86 @@
+<div class="page-container">
+  <div class="header-section">
+    <h2>Bitácora de Accesos</h2>
+    <p>Registro histórico de inicios y cierres de sesión</p>
+  </div>
+
+  <div class="toolbar">
+    <div class="search-box">
+      <i class="fa-solid fa-search"></i>
+      <input 
+        type="text" 
+        placeholder="Buscar por email, IP o acción..." 
+        [(ngModel)]="search" 
+        (keyup.enter)="onSearch()"
+      >
+      <button class="clear-btn" *ngIf="search" (click)="search = ''; onSearch()">
+        <i class="fa-solid fa-times"></i>
+      </button>
+      <app-button variant="primary" (onClick)="onSearch()">Buscar</app-button>
+    </div>
+  </div>
+
+  <div class="table-container">
+    <app-loading-spinner *ngIf="loading"></app-loading-spinner>
+    
+    <table class="data-table" *ngIf="!loading && items.length > 0">
+      <thead>
+        <tr>
+          <th>Fecha y Hora</th>
+          <th>Email</th>
+          <th>IP</th>
+          <th>Acción</th>
+          <th>Dispositivo/Navegador</th>
+          <th class="actions-col">Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of items">
+          <td>
+            <div class="font-medium">{{ item.fecha_hora | date:'shortDate' }}</div>
+            <div class="text-xs text-gray">{{ item.fecha_hora | date:'shortTime' }}</div>
+          </td>
+          <td>{{ item.email_intentado || 'Desconocido' }}</td>
+          <td class="font-mono text-sm">{{ item.ip_address }}</td>
+          <td>
+            <span class="badge"
+                  [ngClass]="{
+                    'badge-success': item.accion === 'LOGIN_EXITOSO',
+                    'badge-error': item.accion === 'LOGIN_FALLIDO',
+                    'empty-badge': item.accion === 'LOGOUT'
+                  }">
+              {{ item.accion }}
+            </span>
+          </td>
+          <td>
+            <div class="user-agent-cell" [title]="item.user_agent">
+              {{ item.user_agent }}
+            </div>
+          </td>
+          <td class="actions-col">
+            <span *ngIf="item.exito" class="status-success"><i class="fa-solid fa-check-circle"></i> Éxito</span>
+            <span *ngIf="!item.exito" class="status-error"><i class="fa-solid fa-times-circle"></i> Fallido</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="empty-state" *ngIf="!loading && items.length === 0">
+      <i class="fa-solid fa-history"></i>
+      <h3>Sin registros</h3>
+      <p>No se encontraron accesos en la bitácora.</p>
+    </div>
+  </div>
+
+  <div class="pagination" *ngIf="total > 0">
+    <div class="page-info">
+      Mostrando {{ skip + 1 }} - {{ (skip + limit) > total ? total : (skip + limit) }} de {{ total }}
+    </div>
+    <button class="page-btn" (click)="prevPage()" [disabled]="skip === 0">
+      <i class="fa-solid fa-chevron-left"></i> Anterior
+    </button>
+    <button class="page-btn" (click)="nextPage()" [disabled]="skip + limit >= total">
+      Siguiente <i class="fa-solid fa-chevron-right"></i>
+    </button>
+  </div>
+</div>

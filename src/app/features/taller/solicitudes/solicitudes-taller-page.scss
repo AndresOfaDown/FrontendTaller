@@ -1,0 +1,98 @@
+.solicitudes-page {
+  padding: 1rem;
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+
+    h2 {
+      margin: 0;
+      color: var(--color-primary-dark);
+    }
+  }
+
+  .loading-container {
+    display: flex;
+    justify-content: center;
+    padding: 3rem;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 3rem;
+    color: var(--color-text-light);
+    
+    i {
+      margin-bottom: 1rem;
+      opacity: 0.5;
+    }
+  }
+
+  .solicitudes-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+
+    .solicitud-card {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        .fecha {
+          font-size: 0.85rem;
+          color: var(--color-text-light);
+        }
+
+        .estado-badge {
+          padding: 0.25rem 0.75rem;
+          border-radius: 20px;
+          font-size: 0.75rem;
+          font-weight: 600;
+
+          &.pendiente, &.sugerido {
+            background-color: #fff3cd;
+            color: #856404;
+          }
+          &.rechazado {
+            background-color: #f8d7da;
+            color: #721c24;
+          }
+          &.aprobado {
+            background-color: #d4edda;
+            color: #155724;
+          }
+        }
+      }
+
+      .card-body {
+        p {
+          margin: 0.25rem 0;
+          font-size: 0.9rem;
+        }
+      }
+
+      .card-actions {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: auto;
+        padding-top: 1rem;
+        border-top: 1px solid var(--color-gray-200);
+
+        .btn {
+          flex: 1;
+        }
+      }
+    }
+  }
+}

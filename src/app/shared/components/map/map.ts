@@ -29,7 +29,7 @@ export class Map implements AfterViewInit, OnDestroy {
   @Input() initialLat: number = -17.78629;   // Coordenadas de Bolivia (La Paz)
   @Input() initialLng: number = -63.18117;
   @Input() interactive: boolean = true;
-  @Input() mapId: string = 'map'; // ID único para cada instancia del mapa
+  @Input() mapId: string = 'map-' + Math.random().toString(36).substr(2, 9); // ID único por instancia
   @Output() locationSelected = new EventEmitter<{ lat: number; lng: number }>();
 
   private map: L.Map | null = null;
@@ -39,10 +39,10 @@ export class Map implements AfterViewInit, OnDestroy {
   constructor(private el: ElementRef) {}
 
   ngAfterViewInit(): void {
-    // Esperar un poco más para asegurar que el contenedor esté visible
+    // Esperar a que el modal termine de animarse antes de inicializar el mapa
     setTimeout(() => {
       this.initMapWithRetry();
-    }, 150);
+    }, 400);
   }
 
   ngOnDestroy(): void {

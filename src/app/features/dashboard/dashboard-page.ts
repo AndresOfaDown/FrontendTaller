@@ -10,7 +10,7 @@ import { Tabs, TabItem } from '../../shared/components/tabs/tabs';
 import { Sidebar, SidebarItem } from '../../shared/components/sidebar/sidebar';
 import { LoadingSpinner } from '../../shared/components/loading-spinner/loading-spinner';
 import { NormalView } from './views/normal-view';
-import { TallerView } from './views/taller-view';
+import { SolicitudesTallerPage } from '../taller/solicitudes/solicitudes-taller-page';
 import { SistemaView } from './views/sistema-view';
 import { VehiculosPage } from '../vehiculos/vehiculos-page';
 import { SolicitudesPage } from '../solicitudes/solicitudes-page';
@@ -26,12 +26,14 @@ import { IncidentesPage } from '../sistema/incidentes/incidentes-page';
 import { ConfiguracionPage } from '../sistema/configuracion/configuracion-page';
 import { PerfilTallerPage } from '../taller/perfil-taller/perfil-taller-page';
 import { ServiciosTallerPage } from '../taller/servicios/servicios-page';
+import { UsuariosPage } from '../sistema/usuarios/usuarios-page';
+import { BitacoraPage } from '../sistema/bitacora/bitacora-page';
 import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-dashboard-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, Logo, UserAvatar, Tabs, Sidebar, LoadingSpinner, NormalView, TallerView, SistemaView, VehiculosPage, SolicitudesPage, SolicitudesPendientesPage, EmpleadosPage, TecnicosPage, VehiculosTallerPage, EspecialidadesPage, TalleresAdminPage, CategoriasIncidentesPage, IncidentesPage, ConfiguracionPage, PerfilTallerPage, ServiciosTallerPage],
+  imports: [CommonModule, FormsModule, Logo, UserAvatar, Tabs, Sidebar, LoadingSpinner, NormalView, SolicitudesTallerPage, VehiculosPage, SolicitudesPage, SolicitudesPendientesPage, EmpleadosPage, TecnicosPage, VehiculosTallerPage, EspecialidadesPage, TalleresAdminPage, CategoriasIncidentesPage, IncidentesPage, ConfiguracionPage, PerfilTallerPage, ServiciosTallerPage, UsuariosPage, BitacoraPage],
   templateUrl: './dashboard-page.html',
   styleUrls: ['./dashboard-page.scss']
 })
@@ -65,6 +67,19 @@ export class DashboardPage implements OnInit {
     private tallerService: TallerService
   ) {}
 
+  get displayRole(): string {
+    if (!this.roles || this.roles.length === 0) return '';
+    
+    // Mostrar siempre el rol de mayor jerarquía que posea el usuario
+    if (this.roles.includes('Administrador del Sistema')) return 'Administrador del Sistema';
+    if (this.roles.includes('Administrador del Taller')) return 'Administrador de Taller';
+    if (this.roles.includes('Mecanico')) return 'Mecánico';
+    if (this.roles.includes('cliente')) return 'Cliente';
+    if (this.roles.includes('conductor')) return 'Conductor';
+    
+    return this.roles[0];
+  }
+
   async ngOnInit() {
     await this.loadUserProfile();
     this.setupTabs();
@@ -76,17 +91,21 @@ export class DashboardPage implements OnInit {
     this.profileService.getMyProfile().subscribe({
       next: (profile) => {
         this.user = profile;
-        // Obtener roles del token (o de una llamada adicional)
-        const token = localStorage.getItem('token');
-        if (token) {
-          try {
-            const payload = JSON.parse(atob(token.split('.')[1]));
-            this.roles = payload.roles || [];
-          } catch(e) {}
+        // Usar roles directamente del perfil (el backend los incluye en PerfilResponse)
+        this.roles = profile.roles || [];
+        // Fallback: si el backend no devuelve roles, intentar desde el token JWT
+        if (this.roles.length === 0) {
+          const token = localStorage.getItem('token');
+          if (token) {
+            try {
+              const payload = JSON.parse(atob(token.split('.')[1]));
+              this.roles = payload.roles || [];
+            } catch(e) {}
+          }
         }
         this.setupTabs();
-        // Si el usuario tiene rol de admin_taller o super_admin_taller, cargar talleres
-        if (this.roles.includes('admin_taller') || this.roles.includes('super_admin_taller')) {
+        // Si el usuario tiene rol de admin_taller o mecanico, cargar talleres
+        if (this.roles.includes('Administrador del Taller') || this.roles.includes('Mecanico')) {
           this.cargarTalleres();
         }
         this.cdr.detectChanges();
@@ -124,15 +143,14 @@ export class DashboardPage implements OnInit {
 
   setupTabs() {
     this.tabs = [
-      { id: 'normal', label: 'Mi Cuenta', icon: 'fa-user', visible: this.roles.includes('cliente') },
-      { id: 'taller', label: 'Gestión de Taller', icon: 'fa-wrench', visible: this.roles.includes('admin_taller') || this.roles.includes('super_admin_taller') },
-      { id: 'sistema', label: 'Administración', icon: 'fa-cogs', visible: this.roles.includes('admin_sistema') }
+      { id: 'normal', label: 'Mi Cuenta', icon: 'fa-user', visible: this.roles.includes('cliente') || this.roles.includes('conductor') },
+      { id: 'taller', label: 'Gestión de Taller', icon: 'fa-wrench', visible: this.roles.includes('Administrador del Taller') || this.roles.includes('Mecanico') },
+      { id: 'sistema', label: 'Administración', icon: 'fa-cogs', visible: this.roles.includes('Administrador del Sistema') }
     ];
-    const firstVisible = this.tabs.find(t => t.visible);
-    if (firstVisible) {
-      this.activeTabId = firstVisible.id;
-    } else {
-      this.activeTabId = 'normal'; // fallback
+    // Asegurar que haya un tab activo válido
+    if (!this.tabs.find(t => t.id === this.activeTabId && t.visible)) {
+      const firstVisible = this.tabs.find(t => t.visible);
+      this.activeTabId = firstVisible ? firstVisible.id : 'normal';
     }
   }
 
@@ -151,17 +169,19 @@ export class DashboardPage implements OnInit {
         { id: 'solicitudes', label: 'Solicitar Afiliación', icon: 'fa-file-signature', visible: true }
       ];
     } else if (tabId === 'taller') {
+      const isMecanico = this.roles.includes('Mecanico') && !this.roles.includes('Administrador del Taller');
       this.sidebarItems = [
         { id: 'perfil', label: 'Perfil del Taller', icon: 'fa-building', visible: true },
         { id: 'solicitudes', label: 'Solicitudes', icon: 'fa-clipboard-list', visible: true },
         { id: 'servicios', label: 'Gestión de Servicios', icon: 'fa-tools', visible: true },
-        { id: 'vehiculos', label: 'Vehículos', icon: 'fa-car', visible: true },
-        { id: 'tecnicos', label: 'Técnicos', icon: 'fa-users', visible: true },
-        { id: 'empleados', label: 'Empleados', icon: 'fa-users', visible: true }
+        { id: 'vehiculos', label: 'Vehículos', icon: 'fa-car', visible: !isMecanico },
+        { id: 'tecnicos', label: 'Técnicos', icon: 'fa-users', visible: !isMecanico },
+        { id: 'empleados', label: 'Empleados', icon: 'fa-users', visible: !isMecanico }
       ];
     } else if (tabId === 'sistema') {
       this.sidebarItems = [
         { id: 'usuarios', label: 'Usuarios', icon: 'fa-user-cog', visible: true },
+        { id: 'bitacora', label: 'Bitácora', icon: 'fa-history', visible: true },
         { id: 'especialidades', label: 'Especialidades', icon: 'fa-star', visible: true },
         { id: 'categorias-incidentes', label: 'Categorías (Incidentes)', icon: 'fa-list', visible: true },
         { id: 'incidentes', label: 'Tipos de Incidentes', icon: 'fa-triangle-exclamation', visible: true },

@@ -1,0 +1,87 @@
+<div class="page-container">
+  <div class="header-section">
+    <h2>Gestión de Usuarios</h2>
+    <p>Administra los usuarios del sistema, sus estados y revisa sus roles.</p>
+  </div>
+
+  <div class="toolbar">
+    <div class="search-box">
+      <i class="fa-solid fa-search"></i>
+      <input 
+        type="text" 
+        placeholder="Buscar por nombre, email, o CI..." 
+        [(ngModel)]="searchQuery" 
+        (keyup.enter)="onSearch()"
+      />
+      <button *ngIf="searchQuery" class="clear-btn" (click)="clearSearch()">
+        <i class="fa-solid fa-times"></i>
+      </button>
+      <app-button variant="secondary" (click)="onSearch()">Buscar</app-button>
+    </div>
+  </div>
+
+  <div class="table-container">
+    <app-loading-spinner *ngIf="isLoading"></app-loading-spinner>
+    
+    <table class="data-table" *ngIf="!isLoading && usuarios.length > 0">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre Completo</th>
+          <th>Usuario</th>
+          <th>Email</th>
+          <th>Roles</th>
+          <th>Estado</th>
+          <th class="actions-col">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of usuarios" [class.inactive]="!user.is_active">
+          <td>#{{ user.id }}</td>
+          <td>
+            <div class="user-info">
+              <span class="user-name">{{ user.nombre_completo }}</span>
+              <span class="user-ci" *ngIf="user.ci">CI: {{ user.ci }}</span>
+            </div>
+          </td>
+          <td>{{ user.username }}</td>
+          <td>{{ user.email }}</td>
+          <td>
+            <div class="roles-container">
+              <span class="badge role-badge" *ngFor="let rol of user.roles">{{ rol }}</span>
+              <span class="badge empty-badge" *ngIf="user.roles.length === 0">Sin rol</span>
+            </div>
+          </td>
+          <td>
+            <span class="badge" [ngClass]="user.is_active ? 'badge-success' : 'badge-error'">
+              {{ user.is_active ? 'Activo' : 'Suspendido' }}
+            </span>
+          </td>
+          <td class="actions-col">
+            <app-button 
+              [variant]="user.is_active ? 'secondary' : 'primary'"
+              (click)="toggleStatus(user)">
+              <i class="fa-solid fa-power-off"></i> {{ user.is_active ? 'Suspender' : 'Activar' }}
+            </app-button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="empty-state" *ngIf="!isLoading && usuarios.length === 0">
+      <i class="fa-solid fa-users-slash"></i>
+      <h3>No se encontraron usuarios</h3>
+      <p>Intenta con otros criterios de búsqueda.</p>
+    </div>
+  </div>
+
+  <div class="pagination" *ngIf="total > limit">
+    <button [disabled]="skip === 0" (click)="prevPage()" class="page-btn">
+      <i class="fa-solid fa-chevron-left"></i> Anterior
+    </button>
+    <span class="page-info">Página {{ currentPage }} de {{ totalPages }}</span>
+    <button [disabled]="skip + limit >= total" (click)="nextPage()" class="page-btn">
+      Siguiente <i class="fa-solid fa-chevron-right"></i>
+    </button>
+  </div>
+</div>

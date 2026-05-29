@@ -14,6 +14,7 @@ export interface UserProfile {
   complemento: string | null;
   telefono: string | null;
   direccion: string | null;
+  roles: string[]; // Roles del usuario (e.g. 'cliente', 'admin_taller', 'admin_sistema')
 }
 
 @Injectable({ providedIn: 'root' })

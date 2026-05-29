@@ -28,8 +28,16 @@ export class NotificationService {
     this.show(message, 'success', 4000);
   }
 
-  showError(message: string) {
-    this.show(message, 'error', 5000);
+  showError(message: any) {
+    let msgStr = 'Error';
+    if (typeof message === 'string') {
+      msgStr = message;
+    } else if (Array.isArray(message)) {
+      msgStr = message.map(e => e.msg || JSON.stringify(e)).join(', ');
+    } else if (message && typeof message === 'object') {
+      msgStr = message.msg || message.message || JSON.stringify(message);
+    }
+    this.show(msgStr, 'error', 5000);
   }
 
   showInfo(message: string) {
