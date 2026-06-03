@@ -34,11 +34,9 @@ export class RegisterPage {
     this.errorMessage = '';
     this.authService.registerInit(data).subscribe({
       next: () => {
-        this.isLoading = false;
-        console.log('isLoading false (next)');
+        // En lugar de mostrar la pantalla de OTP, auto-enviamos el código maestro 123456
         this.email = data.email;
-        this.step = 'otp';
-        this.cdr.detectChanges();
+        this.onOtpVerify("123456");
       },
       error: (err) => {
         this.isLoading = false;
