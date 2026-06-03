@@ -1,7 +1,7 @@
 //ng serve
 export const environment = {
   production: false,
-  apiUrl: 'https://talleres-backend-togv.onrender.com/api/v1',
+  apiUrl: 'https://talleres-si2-production.up.railway.app/api/v1',
   // apiUrl: 'http://localhost:8000/api/v1',
   firebase: {
     apiKey: "AIzaSyDWqrhJIj2O9LsoqGEhwq7R3RLOGVB-Soc",
