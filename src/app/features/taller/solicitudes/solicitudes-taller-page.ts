@@ -1,12 +1,14 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TallerServiciosService, SolicitudServicioList } from '../../../core/services/taller-servicios.service';
+import { FormsModule } from '@angular/forms';
+import { TallerServiciosService, SolicitudServicioList, TecnicoDisponible, VehiculoDisponible } from '../../../core/services/taller-servicios.service';
 import { LoadingSpinner } from '../../../shared/components/loading-spinner/loading-spinner';
+import { Modal } from '../../../shared/components/modal/modal';
 
 @Component({
   selector: 'app-solicitudes-taller-page',
   standalone: true,
-  imports: [CommonModule, LoadingSpinner],
+  imports: [CommonModule, FormsModule, LoadingSpinner, Modal],
   templateUrl: './solicitudes-taller-page.html',
   styleUrls: ['./solicitudes-taller-page.scss']
 })
@@ -15,6 +17,19 @@ export class SolicitudesTallerPage implements OnChanges, OnInit {
 
   solicitudes: SolicitudServicioList[] = [];
   isLoading = false;
+
+  // Modal State
+  showAceptarModal = false;
+  selectedSolicitudId: number | null = null;
+  isSubmitting = false;
+
+  // Data for Selects
+  tecnicosDisponibles: TecnicoDisponible[] = [];
+  vehiculosDisponibles: VehiculoDisponible[] = [];
+
+  // Selections
+  selectedTecnicoId: number | null = null;
+  selectedVehiculoId: number | null = null;
 
   constructor(
     private tallerServiciosService: TallerServiciosService,
@@ -52,9 +67,60 @@ export class SolicitudesTallerPage implements OnChanges, OnInit {
   }
 
   aceptarSolicitud(solicitudId: number) {
-    alert('Para aceptar la solicitud, primero debes asignar técnicos y vehículos. Esta función está en desarrollo.');
-    // TODO: Implementar modal para seleccionar técnicos y vehículos antes de aceptar
-    // this.tallerServiciosService.aceptarSolicitud(solicitudId, this.tallerId, data).subscribe(...)
+    this.selectedSolicitudId = solicitudId;
+    this.selectedTecnicoId = null;
+    this.selectedVehiculoId = null;
+    
+    // Cargar técnicos y vehículos disponibles
+    this.tallerServiciosService.listarTecnicosDisponibles(this.tallerId).subscribe({
+      next: (tecnicos) => this.tecnicosDisponibles = tecnicos,
+      error: (err) => console.error('Error al cargar técnicos', err)
+    });
+
+    this.tallerServiciosService.listarVehiculosDisponibles(this.tallerId).subscribe({
+      next: (vehiculos) => this.vehiculosDisponibles = vehiculos,
+      error: (err) => console.error('Error al cargar vehículos', err)
+    });
+
+    this.showAceptarModal = true;
+  }
+
+  cerrarModal() {
+    this.showAceptarModal = false;
+    this.selectedSolicitudId = null;
+  }
+
+  confirmarAceptar() {
+    if (!this.selectedSolicitudId) return;
+    if (!this.selectedTecnicoId) {
+      alert('Debes seleccionar al menos un técnico.');
+      return;
+    }
+
+    this.isSubmitting = true;
+    
+    const tecnicos_ids = [Number(this.selectedTecnicoId)];
+    const vehiculos_ids = this.selectedVehiculoId ? [Number(this.selectedVehiculoId)] : [];
+
+    const data = {
+      id_solicitud_servicio: this.selectedSolicitudId,
+      tecnicos_ids,
+      vehiculos_ids
+    };
+
+    this.tallerServiciosService.aceptarSolicitud(this.selectedSolicitudId, this.tallerId, data).subscribe({
+      next: () => {
+        alert('Solicitud aceptada exitosamente. El servicio está en curso.');
+        this.isSubmitting = false;
+        this.cerrarModal();
+        this.cargarSolicitudes();
+      },
+      error: (err: any) => {
+        console.error(err);
+        alert('Error al aceptar la solicitud. Revisa si hay técnicos o vehículos disponibles.');
+        this.isSubmitting = false;
+      }
+    });
   }
 
   rechazarSolicitud(solicitudId: number) {
