@@ -15,6 +15,7 @@ export interface UserProfile {
   telefono: string | null;
   direccion: string | null;
   roles: string[]; // Roles del usuario (e.g. 'cliente', 'admin_taller', 'admin_sistema')
+  tenant_id: number | null;
 }
 
 @Injectable({ providedIn: 'root' })

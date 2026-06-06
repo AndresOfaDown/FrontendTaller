@@ -20,8 +20,11 @@ export class SolicitudesTallerPage implements OnChanges, OnInit {
 
   // Modal State
   showAceptarModal = false;
+  showCotizarModal = false;
   selectedSolicitudId: number | null = null;
   isSubmitting = false;
+
+  cotizacionMonto: number | null = null;
 
   // Data for Selects
   tecnicosDisponibles: TecnicoDisponible[] = [];
@@ -87,7 +90,39 @@ export class SolicitudesTallerPage implements OnChanges, OnInit {
 
   cerrarModal() {
     this.showAceptarModal = false;
+    this.showCotizarModal = false;
     this.selectedSolicitudId = null;
+    this.cotizacionMonto = null;
+  }
+
+  abrirCotizar(solicitudId: number) {
+    this.selectedSolicitudId = solicitudId;
+    this.cotizacionMonto = null;
+    this.showCotizarModal = true;
+  }
+
+  confirmarCotizar() {
+    if (!this.selectedSolicitudId || !this.cotizacionMonto || this.cotizacionMonto <= 0) {
+      alert('Por favor ingresa un monto válido.');
+      return;
+    }
+
+    this.isSubmitting = true;
+    const data = { costo_estimado: this.cotizacionMonto };
+
+    this.tallerServiciosService.cotizarSolicitud(this.selectedSolicitudId, this.tallerId, data).subscribe({
+      next: () => {
+        alert('Cotización enviada al cliente.');
+        this.isSubmitting = false;
+        this.cerrarModal();
+        this.cargarSolicitudes();
+      },
+      error: (err: any) => {
+        console.error(err);
+        alert('Error al enviar la cotización.');
+        this.isSubmitting = false;
+      }
+    });
   }
 
   confirmarAceptar() {
@@ -108,7 +143,7 @@ export class SolicitudesTallerPage implements OnChanges, OnInit {
       vehiculos_ids
     };
 
-    this.tallerServiciosService.aceptarSolicitud(this.selectedSolicitudId, this.tallerId, data).subscribe({
+    this.tallerServiciosService.iniciarServicio(this.selectedSolicitudId, this.tallerId, data).subscribe({
       next: () => {
         alert('Solicitud aceptada exitosamente. El servicio está en curso.');
         this.isSubmitting = false;

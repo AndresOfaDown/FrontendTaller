@@ -31,7 +31,6 @@
   </div>
 
   <app-modal [title]="editing ? 'Editar tipo' : 'Nuevo tipo de incidente'" [visible]="showForm" (close)="showForm=false">
-    <h3>{{ editing ? 'Editar tipo' : 'Nuevo tipo de incidente' }}</h3>
     <app-input-field [(ngModel)]="formData.concepto" label="Concepto"></app-input-field>
     <label>Prioridad</label>
     <select [(ngModel)]="formData.prioridad">

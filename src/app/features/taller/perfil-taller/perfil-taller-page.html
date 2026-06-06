@@ -2,7 +2,7 @@
   <div class="header">
     <h2>Perfil del Taller</h2>
     <app-button 
-      *ngIf="isSuperAdmin && taller" 
+      *ngIf="canEdit && taller" 
       variant="primary" 
       (click)="openEditModal()"
     >

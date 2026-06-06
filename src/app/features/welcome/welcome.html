@@ -1,27 +1,86 @@
-<div class="welcome">
-  <div class="hero">
-    <h1>Plataforma de Asistencia Vial Inteligente</h1>
-    <p class="subtitle">
-      Conecta con talleres confiables, solicita asistencia en tiempo real y recibe ayuda al instante.
-    </p>
-    <div class="features">
-      <div class="feature">
-        <i class="fas fa-map-marked-alt"></i>
-        <span>Ubicación en tiempo real</span>
-      </div>
-      <div class="feature">
-        <i class="fas fa-car-side"></i>
-        <span>Gestión de vehículos</span>
-      </div>
-      <div class="feature">
-        <i class="fas fa-credit-card"></i>
-        <span>Pagos integrados</span>
-      </div>
-      <div class="feature">
-        <i class="fas fa-chart-line"></i>
-        <span>Historial de servicios</span>
+<div class="welcome-container" style="display: flex; min-height: 100vh; background-color: #f8f9fa;">
+  
+  <!-- Left Side: Login info -->
+  <div class="left-panel" style="flex: 1; padding: 5rem; display: flex; flex-direction: column; justify-content: center;">
+    <div style="max-width: 500px;">
+      <span style="background: white; color: var(--color-primary); padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.8rem; font-weight: bold; border: 1px solid #e0e0e0; letter-spacing: 1px;">ACCESO SEGURO</span>
+      
+      <h1 style="font-size: 4rem; color: var(--color-primary-dark); margin-top: 1.5rem; margin-bottom: 1rem; font-weight: 800; letter-spacing: -1px;">Iniciar sesión</h1>
+      
+      <p style="color: #666; font-size: 1.1rem; line-height: 1.6; margin-bottom: 3rem;">
+        Ingresa con tu correo y contraseña para acceder al panel según tu rol: Administrador, Administrador de taller o Cliente.
+      </p>
+
+      <div style="display: flex; gap: 1rem;">
+        <div style="flex: 1; background: white; padding: 1.5rem; border-radius: 12px; border: 1px solid #eee; box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
+          <h3 style="margin: 0 0 0.5rem 0; color: #111; font-size: 1rem;">Admin</h3>
+          <p style="margin: 0; color: #888; font-size: 0.85rem;">Gestión total</p>
+        </div>
+        <div style="flex: 1; background: white; padding: 1.5rem; border-radius: 12px; border: 1px solid #eee; box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
+          <h3 style="margin: 0 0 0.5rem 0; color: #111; font-size: 1rem;">Mecánico</h3>
+          <p style="margin: 0; color: #888; font-size: 0.85rem;">Tus servicios</p>
+        </div>
+        <div style="flex: 1; background: white; padding: 1.5rem; border-radius: 12px; border: 1px solid #eee; box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
+          <h3 style="margin: 0 0 0.5rem 0; color: #111; font-size: 1rem;">Cliente</h3>
+          <p style="margin: 0; color: #888; font-size: 0.85rem;">Tus solicitudes</p>
+        </div>
       </div>
     </div>
-    <app-button variant="primary" routerLink="/register">Comienza ahora</app-button>
+  </div>
+
+  <!-- Right Side: Action Card -->
+  <div class="right-panel" style="flex: 1; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);">
+    <div class="action-card" style="background: white; border-radius: 20px; padding: 2rem; width: 100%; max-width: 450px; box-shadow: 0 20px 40px rgba(0,0,0,0.08);">
+      
+      <!-- Tabs -->
+      <div style="display: flex; background: #f8f9fa; border-radius: 10px; padding: 0.4rem; margin-bottom: 2rem;">
+        <button routerLink="/login" style="flex: 1; padding: 0.8rem; border: none; background: transparent; color: #666; font-weight: 500; cursor: pointer; border-radius: 8px;">
+          <i class="fas fa-mobile-alt"></i> Iniciar Sesión
+        </button>
+        <button style="flex: 1; padding: 0.8rem; border: none; background: white; color: var(--color-primary); font-weight: 600; cursor: pointer; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+          <i class="fas fa-star" style="color: #fbbc05;"></i> Nuevo Taller
+        </button>
+      </div>
+
+      <!-- Content -->
+      <div style="background: #fdf2f2; padding: 1.5rem; border-radius: 12px; margin-bottom: 1rem; border: 1px solid #fae4e4;">
+        <h4 style="margin: 0 0 0.5rem 0; color: #111; font-size: 1rem;"><i class="fas fa-rocket" style="color: var(--color-primary);"></i> Registra tu Taller</h4>
+        <p style="margin: 0; color: #666; font-size: 0.85rem;">Comienza tu periodo de prueba y accede a planes de suscripción flexible.</p>
+      </div>
+
+      <div style="border: 1px solid #eee; padding: 1.2rem; border-radius: 12px; margin-bottom: 1rem; display: flex; align-items: center; gap: 1rem;">
+        <i class="fas fa-chart-bar" style="font-size: 1.5rem; color: #4caf50;"></i>
+        <div>
+          <h4 style="margin: 0 0 0.2rem 0; color: #111; font-size: 0.95rem;">Plan Básico</h4>
+          <p style="margin: 0; color: #888; font-size: 0.8rem;">Ideal para empezar</p>
+        </div>
+      </div>
+
+      <div style="border: 1px solid #eee; padding: 1.2rem; border-radius: 12px; margin-bottom: 1rem; display: flex; align-items: center; gap: 1rem;">
+        <i class="fas fa-bolt" style="font-size: 1.5rem; color: #ff9800;"></i>
+        <div>
+          <h4 style="margin: 0 0 0.2rem 0; color: #111; font-size: 0.95rem;">Plan Pro</h4>
+          <p style="margin: 0; color: #888; font-size: 0.8rem;">Escalable y potente</p>
+        </div>
+      </div>
+
+      <div style="border: 1px solid #eee; padding: 1.2rem; border-radius: 12px; margin-bottom: 2rem; display: flex; align-items: center; gap: 1rem;">
+        <i class="fas fa-crown" style="font-size: 1.5rem; color: #f44336;"></i>
+        <div>
+          <h4 style="margin: 0 0 0.2rem 0; color: #111; font-size: 0.95rem;">Plan Premium</h4>
+          <p style="margin: 0; color: #888; font-size: 0.8rem;">Todas las características</p>
+        </div>
+      </div>
+
+      <button routerLink="/registro-taller" style="width: 100%; padding: 1.2rem; background: var(--color-primary); color: white; border: none; border-radius: 10px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 15px rgba(147, 45, 48, 0.4);">
+        Comenzar Registro de Taller
+      </button>
+
+      <p style="text-align: center; margin-top: 1.5rem; font-size: 0.85rem; color: #888;">
+        ¿Ya tienes un taller? <br>
+        <a routerLink="/login" style="color: var(--color-primary); text-decoration: none; font-weight: 600;">Inicia sesión aquí</a>
+      </p>
+
+    </div>
   </div>
 </div>

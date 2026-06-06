@@ -25,10 +25,14 @@
         <p><strong>Sugerido por:</strong> {{ s.sugerido_por }}</p>
         <p *ngIf="s.distancia_km !== undefined"><strong>Distancia:</strong> {{ s.distancia_km | number:'1.1-2' }} km</p>
         <p *ngIf="s.comentario"><strong>Comentario:</strong> {{ s.comentario }}</p>
+        <p *ngIf="s.costo_estimado !== undefined && s.costo_estimado !== null" class="costo">
+          <strong>Costo Cotizado:</strong> Bs {{ s.costo_estimado }}
+        </p>
       </div>
-      <div class="card-actions" *ngIf="s.estado === 'pendiente' || s.estado === 'sugerido'">
-        <button class="btn btn-success" (click)="aceptarSolicitud(s.id)">Aceptar</button>
-        <button class="btn btn-danger" (click)="rechazarSolicitud(s.id)">Rechazar</button>
+      <div class="card-actions" *ngIf="s.estado === 'pendiente' || s.estado === 'sugerido' || s.estado === 'aceptada' || s.estado === 'rechazada'">
+        <button class="btn btn-primary" *ngIf="s.estado === 'pendiente' || s.estado === 'sugerido' || s.estado === 'rechazada'" (click)="abrirCotizar(s.id)">Volver a Cotizar</button>
+        <button class="btn btn-success" *ngIf="s.estado !== 'rechazada'" (click)="aceptarSolicitud(s.id)">Asignar Técnicos</button>
+        <button class="btn btn-danger" *ngIf="s.estado === 'pendiente' || s.estado === 'sugerido'" (click)="rechazarSolicitud(s.id)">Rechazar</button>
       </div>
     </div>
   </div>
@@ -64,6 +68,26 @@
       <button class="btn btn-success" (click)="confirmarAceptar()" [disabled]="!selectedTecnicoId || isSubmitting">
         <span *ngIf="!isSubmitting">Confirmar y Asignar</span>
         <span *ngIf="isSubmitting"><i class="fa-solid fa-spinner fa-spin"></i> Asignando...</span>
+      </button>
+    </div>
+  </app-modal>
+
+  <!-- Modal Cotizar -->
+  <app-modal
+    title="Cotizar Servicio"
+    [visible]="showCotizarModal"
+    (close)="cerrarModal()">
+    
+    <div class="form-group mb-4">
+      <label>Costo Estimado (Bs) *</label>
+      <input type="number" class="form-control" [(ngModel)]="cotizacionMonto" placeholder="Ej: 150">
+    </div>
+
+    <div class="d-flex justify-content-end gap-2 mt-4">
+      <button class="btn btn-secondary" (click)="cerrarModal()">Cancelar</button>
+      <button class="btn btn-primary btn-submit-cotizacion" (click)="confirmarCotizar()" [disabled]="!cotizacionMonto || isSubmitting">
+        <span *ngIf="!isSubmitting">Enviar Cotización</span>
+        <span *ngIf="isSubmitting"><i class="fa-solid fa-spinner fa-spin"></i> Enviando...</span>
       </button>
     </div>
   </app-modal>

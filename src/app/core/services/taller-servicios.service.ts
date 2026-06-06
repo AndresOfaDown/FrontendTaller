@@ -13,8 +13,13 @@ export interface SolicitudServicioList {
   estado: string;
   sugerido_por: string;
   distancia_km?: number;
+  costo_estimado?: number;
   comentario?: string;
   tiene_servicio: boolean;
+}
+
+export interface CotizacionCreate {
+  costo_estimado: number;
 }
 
 export interface EvidenciaDetalle {
@@ -186,10 +191,19 @@ export class TallerServiciosService {
   // ACCIONES SOBRE SOLICITUDES
   // ============================================================
 
-  aceptarSolicitud(solicitudId: number, idTaller: number, data: ServicioCreate): Observable<Servicio> {
+  cotizarSolicitud(solicitudId: number, idTaller: number, data: CotizacionCreate): Observable<any> {
+    const params = new HttpParams().set('id_taller', idTaller.toString());
+    return this.http.post(
+      `${this.apiUrl}/taller/solicitudes/${solicitudId}/cotizar`,
+      data,
+      { params }
+    );
+  }
+
+  iniciarServicio(solicitudId: number, idTaller: number, data: ServicioCreate): Observable<Servicio> {
     const params = new HttpParams().set('id_taller', idTaller.toString());
     return this.http.post<Servicio>(
-      `${this.apiUrl}/taller/solicitudes/${solicitudId}/aceptar`,
+      `${this.apiUrl}/taller/solicitudes/${solicitudId}/iniciar`,
       data,
       { params }
     );

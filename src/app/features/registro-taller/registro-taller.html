@@ -1,0 +1,45 @@
+<div class="auth-layout" style="display: flex; min-height: 100vh; background: var(--color-primary);">
+  <!-- Lado Izquierdo (Azul) con formulario -->
+  <div class="form-container" style="margin: auto; width: 100%; max-width: 480px; padding: 2rem;">
+    <div class="card" style="background: white; border-radius: 12px; padding: 2.5rem; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
+      
+      <h2 style="font-size: 2rem; color: var(--color-primary-dark); margin-bottom: 0.5rem; margin-top: 0;">Registrar Taller</h2>
+      <p style="color: #666; margin-bottom: 2rem;">Comienza con AsistenciaVial hoy</p>
+      
+      <form (ngSubmit)="onSubmit()">
+        <div class="form-group" style="margin-bottom: 1.2rem;">
+          <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #333; font-size: 0.9rem;">Nombre del Taller</label>
+          <input type="text" [(ngModel)]="nombreTaller" name="nombre" placeholder="Ej: Seguros del Norte" style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; box-sizing: border-box;" required>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 1.2rem;">
+          <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #333; font-size: 0.9rem;">Email del Administrador</label>
+          <input type="email" [(ngModel)]="email" name="email" placeholder="admin@tutaller.com" style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; box-sizing: border-box;" required>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 1.2rem;">
+          <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #333; font-size: 0.9rem;">Contraseña</label>
+          <input type="password" [(ngModel)]="password" name="password" placeholder="Mínimo 8 caracteres" style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; box-sizing: border-box;" required>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 1.5rem;">
+          <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #333; font-size: 0.9rem;">Confirmar Contraseña</label>
+          <input type="password" [(ngModel)]="confirmPassword" name="confirmPassword" placeholder="Confirma tu contraseña" style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; box-sizing: border-box;" required>
+        </div>
+
+        <div *ngIf="error" class="error" style="color: #d32f2f; margin-bottom: 1rem; font-size: 0.9rem;">
+          {{ error }}
+        </div>
+
+        <button type="submit" [disabled]="isLoading" style="width: 100%; padding: 1rem; background: var(--color-primary); color: white; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: 0.2s;">
+          <span *ngIf="!isLoading">Continuar a Planes</span>
+          <span *ngIf="isLoading"><i class="fas fa-spinner fa-spin"></i> Cargando...</span>
+        </button>
+
+        <p style="text-align: center; margin-top: 1.5rem; font-size: 0.9rem; color: #666;">
+          ¿Ya tienes cuenta? <a routerLink="/login" style="color: var(--color-primary); text-decoration: none; font-weight: 600;">Inicia sesión</a>
+        </p>
+      </form>
+    </div>
+  </div>
+</div>

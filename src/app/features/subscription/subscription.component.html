@@ -1,0 +1,95 @@
+<div class="subscription-container">
+  <div class="text-center header-section">
+    <h2>Elige tu Plan</h2>
+    <p class="subtitle">Selecciona el plan perfecto para tu taller</p>
+  </div>
+
+  <div class="pricing-cards">
+    
+    <!-- Plan Básico -->
+    <div class="card pricing-card" 
+         (click)="selectedPlan = 'basico'" 
+         [class.selected]="selectedPlan === 'basico'">
+      <div class="card-header basico-header">
+        <h3>Básico</h3>
+        <div class="price">
+          <span class="currency">$</span>
+          <span class="amount">150</span>
+          <span class="period">/mes</span>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="limits">
+          <strong>Usuarios:</strong> Hasta 3<br>
+          <strong>Clientes:</strong> Hasta 100
+        </div>
+        <ul class="features">
+          <li><i class="fas fa-check"></i> Hasta 3 usuarios</li>
+          <li><i class="fas fa-check"></i> Gestión de 100 clientes</li>
+          <li><i class="fas fa-check"></i> Soporte estándar</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Plan Pro -->
+    <div class="card pricing-card pro-card" 
+         (click)="selectedPlan = 'pro'" 
+         [class.selected]="selectedPlan === 'pro'">
+      <div class="card-header pro-header">
+        <h3>Pro</h3>
+        <div class="price">
+          <span class="currency">$</span>
+          <span class="amount">300</span>
+          <span class="period">/mes</span>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="limits">
+          <strong>Usuarios:</strong> Hasta 10<br>
+          <strong>Clientes:</strong> Hasta 1000
+        </div>
+        <ul class="features">
+          <li><i class="fas fa-check"></i> Hasta 10 usuarios</li>
+          <li><i class="fas fa-check"></i> Gestión de 1000 clientes</li>
+          <li><i class="fas fa-check"></i> Soporte prioritario 24/7</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Plan Premium -->
+    <div class="card pricing-card" 
+         (click)="selectedPlan = 'premium'" 
+         [class.selected]="selectedPlan === 'premium'">
+      <div class="card-header premium-header">
+        <h3>Premium</h3>
+        <div class="price">
+          <span class="currency">$</span>
+          <span class="amount">600</span>
+          <span class="period">/mes</span>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="limits">
+          <strong>Usuarios:</strong> Ilimitados<br>
+          <strong>Clientes:</strong> Ilimitados
+        </div>
+        <ul class="features">
+          <li><i class="fas fa-check"></i> Usuarios ilimitados</li>
+          <li><i class="fas fa-check"></i> Clientes ilimitados</li>
+          <li><i class="fas fa-check"></i> Soporte prioritario 24/7</li>
+          <li><i class="fas fa-check"></i> Integraciones personalizadas</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="action-buttons">
+    <button routerLink="/registro-taller" class="btn-back">
+      Atrás
+    </button>
+    <button (click)="suscribirse(selectedPlan)" class="btn-continue">
+      Continuar al Pago
+    </button>
+  </div>
+</div>

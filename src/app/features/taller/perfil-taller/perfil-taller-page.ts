@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TallerService, TallerDetail, TallerUpdate } from '../../../core/services/taller.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { ProfileService } from '../../../core/services/profile.service';
 import { NotificationService } from '../../../core/services/notification.service';
 import { Button } from '../../../shared/components/button/button';
 import { InputField } from '../../../shared/components/input-field/input-field';
@@ -22,7 +23,7 @@ export class PerfilTallerPage implements OnInit, OnChanges {
 
   taller: TallerDetail | null = null;
   isLoading = false;
-  isSuperAdmin = false;
+  canEdit = false;
 
   // Modal de edición
   showEditModal = false;
@@ -37,6 +38,7 @@ export class PerfilTallerPage implements OnInit, OnChanges {
   constructor(
     private tallerService: TallerService,
     private authService: AuthService,
+    private profileService: ProfileService,
     private notificationService: NotificationService,
     private cdr: ChangeDetectorRef
   ) {}
@@ -55,15 +57,28 @@ export class PerfilTallerPage implements OnInit, OnChanges {
   }
 
   checkUserRole() {
-    const token = localStorage.getItem('token');
-    if (token) {
-      try {
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        this.isSuperAdmin = payload.roles?.includes('super_admin_taller') || false;
-      } catch (e) {
-        console.error('Error al decodificar token:', e);
+    this.profileService.getMyProfile().subscribe({
+      next: (profile) => {
+        const userRoles = profile.roles || [];
+        this.canEdit = userRoles.includes('super_admin_taller') || userRoles.includes('Administrador del Taller');
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error al obtener perfil:', err);
+        // Fallback al token
+        const token = localStorage.getItem('token');
+        if (token) {
+          try {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            const userRoles = payload.roles || [];
+            this.canEdit = userRoles.includes('super_admin_taller') || userRoles.includes('Administrador del Taller');
+            this.cdr.detectChanges();
+          } catch (e) {
+            console.error('Error al decodificar token:', e);
+          }
+        }
       }
-    }
+    });
   }
 
   loadTaller() {

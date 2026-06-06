@@ -43,6 +43,11 @@ export class ServiciosTallerPage implements OnInit {
   showDetalleModal = false;
   solicitudDetalle: SolicitudServicioDetalle | null = null;
 
+  // Modal cotización
+  showCotizarModal = false;
+  solicitudIdCotizar: number | null = null;
+  costoEstimado: number | null = null;
+
   // Modal asignación
   showAsignacionModal = false;
   solicitudIdAsignar: number | null = null;
@@ -250,6 +255,45 @@ export class ServiciosTallerPage implements OnInit {
   // ACCIONES SOBRE SOLICITUDES
   // ============================================================
 
+  abrirModalCotizar(solicitudId: number) {
+    this.solicitudIdCotizar = solicitudId;
+    this.costoEstimado = null;
+    this.showCotizarModal = true;
+    this.closeDetalleModal();
+    this.cdr.detectChanges();
+  }
+
+  closeCotizarModal() {
+    this.showCotizarModal = false;
+    this.solicitudIdCotizar = null;
+    this.costoEstimado = null;
+    this.cdr.detectChanges();
+  }
+
+  confirmarCotizar() {
+    if (!this.solicitudIdCotizar || this.costoEstimado === null || this.costoEstimado <= 0) {
+      this.notificationService.showError('Ingrese un costo estimado válido');
+      return;
+    }
+
+    const data = {
+      costo_estimado: this.costoEstimado
+    };
+
+    this.serviciosService.cotizarSolicitud(this.solicitudIdCotizar, this.tallerId, data).subscribe({
+      next: () => {
+        this.closeCotizarModal();
+        setTimeout(() => {
+          this.notificationService.showSuccess('Solicitud cotizada exitosamente. Esperando respuesta del cliente.');
+          this.cargarDatosSegunTab();
+        }, 0);
+      },
+      error: (err) => {
+        this.notificationService.showError(err.error?.detail || 'Error al cotizar solicitud');
+      }
+    });
+  }
+
   abrirModalAsignacion(solicitudId: number) {
     this.solicitudIdAsignar = solicitudId;
     this.tecnicosSeleccionados = [];
@@ -326,16 +370,16 @@ export class ServiciosTallerPage implements OnInit {
       vehiculos_ids: this.vehiculosSeleccionados
     };
 
-    this.serviciosService.aceptarSolicitud(this.solicitudIdAsignar, this.tallerId, data).subscribe({
+    this.serviciosService.iniciarServicio(this.solicitudIdAsignar, this.tallerId, data).subscribe({
       next: () => {
         this.closeAsignacionModal();
         setTimeout(() => {
-          this.notificationService.showSuccess('Solicitud aceptada exitosamente');
+          this.notificationService.showSuccess('Servicio iniciado y recursos asignados');
           this.cargarDatosSegunTab();
         }, 0);
       },
       error: (err) => {
-        this.notificationService.showError(err.error?.detail || 'Error al aceptar solicitud');
+        this.notificationService.showError(err.error?.detail || 'Error al iniciar servicio');
       }
     });
   }
@@ -436,6 +480,7 @@ export class ServiciosTallerPage implements OnInit {
     const map: any = {
       // Estados de solicitud
       'pendiente': 'estado-pendiente',
+      'cotizada': 'estado-cotizada',
       'aceptada': 'estado-aceptada',
       'rechazada': 'estado-rechazada',
       'cancelada': 'estado-cancelada',
@@ -448,7 +493,8 @@ export class ServiciosTallerPage implements OnInit {
       'finalizado': 'estado-finalizado',
       // Estados antiguos (por compatibilidad temporal)
       'en_proceso': 'estado-en-proceso',
-      'completado': 'estado-completado'
+      'completado': 'estado-completado',
+      'cancelado': 'estado-cancelada'
     };
     return map[estado] || '';
   }
@@ -457,7 +503,8 @@ export class ServiciosTallerPage implements OnInit {
     const map: any = {
       // Estados de solicitud
       'pendiente': 'Pendiente',
-      'aceptada': 'Aceptada',
+      'cotizada': 'Cotizada (Esperando cliente)',
+      'aceptada': 'Aceptada (Lista para iniciar)',
       'rechazada': 'Rechazada',
       'cancelada': 'Cancelada',
       // Estados de servicio (nuevos)
@@ -469,7 +516,8 @@ export class ServiciosTallerPage implements OnInit {
       'finalizado': 'Finalizado',
       // Estados antiguos (por compatibilidad temporal)
       'en_proceso': 'En Proceso',
-      'completado': 'Completado'
+      'completado': 'Completado',
+      'cancelado': 'Cancelado por Cliente'
     };
     return map[estado] || estado;
   }

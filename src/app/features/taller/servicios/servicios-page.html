@@ -334,12 +334,38 @@
         <app-button variant="secondary" class="btn-rechazar" (click)="abrirModalRechazar(solicitudDetalle.id)">
           Rechazar
         </app-button>
-        <app-button variant="primary" (click)="abrirModalAsignacion(solicitudDetalle.id)">
-          Aceptar
+        <app-button variant="primary" (click)="abrirModalCotizar(solicitudDetalle.id)">
+          Cotizar
         </app-button>
       </div>
-      <div class="modal-actions" *ngIf="solicitudDetalle.estado !== 'pendiente'">
+      <div class="modal-actions" *ngIf="solicitudDetalle.estado === 'aceptada'">
         <app-button variant="secondary" (click)="closeDetalleModal()">Cerrar</app-button>
+        <app-button variant="primary" (click)="abrirModalAsignacion(solicitudDetalle.id)">
+          Iniciar Servicio y Asignar
+        </app-button>
+      </div>
+      <div class="modal-actions" *ngIf="solicitudDetalle.estado !== 'pendiente' && solicitudDetalle.estado !== 'aceptada'">
+        <app-button variant="secondary" (click)="closeDetalleModal()">Cerrar</app-button>
+      </div>
+    </div>
+  </app-modal>
+
+  <!-- ============================================================ -->
+  <!-- MODAL COTIZAR -->
+  <!-- ============================================================ -->
+  <app-modal 
+    [title]="'Cotizar Servicio'" 
+    [visible]="showCotizarModal" 
+    (close)="closeCotizarModal()">
+    <div class="confirm-modal">
+      <p>Introduce el costo estimado de la reparación para enviar el presupuesto al cliente:</p>
+      <div class="form-group" style="margin-top: 1rem; margin-bottom: 1rem;">
+        <label>Costo Estimado ($):</label>
+        <input type="number" [(ngModel)]="costoEstimado" placeholder="Ej. 1500.00" class="form-control" style="width: 100%; padding: 0.5rem; margin-top: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">
+      </div>
+      <div class="modal-actions">
+        <app-button variant="secondary" (click)="closeCotizarModal()">Cancelar</app-button>
+        <app-button variant="primary" (click)="confirmarCotizar()">Enviar Cotización</app-button>
       </div>
     </div>
   </app-modal>
@@ -392,7 +418,7 @@
       <!-- Botones -->
       <div class="modal-actions">
         <app-button variant="secondary" (click)="closeAsignacionModal()">Cancelar</app-button>
-        <app-button variant="primary" (click)="confirmarAceptar()">Aceptar Servicio</app-button>
+        <app-button variant="primary" (click)="confirmarAceptar()">Iniciar Servicio</app-button>
       </div>
     </div>
   </app-modal>
