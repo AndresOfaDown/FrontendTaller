@@ -29,9 +29,11 @@
           <strong>Costo Cotizado:</strong> Bs {{ s.costo_estimado }}
         </p>
       </div>
-      <div class="card-actions" *ngIf="s.estado === 'pendiente' || s.estado === 'sugerido' || s.estado === 'aceptada' || s.estado === 'rechazada'">
-        <button class="btn btn-primary" *ngIf="s.estado === 'pendiente' || s.estado === 'sugerido' || s.estado === 'rechazada'" (click)="abrirCotizar(s.id)">Volver a Cotizar</button>
-        <button class="btn btn-success" *ngIf="s.estado !== 'rechazada'" (click)="aceptarSolicitud(s.id)">Asignar Técnicos</button>
+      <div class="card-actions" *ngIf="s.estado === 'pendiente' || s.estado === 'sugerido' || s.estado === 'aceptada' || s.estado === 'cotizacion_rechazada'">
+        <button class="btn btn-primary" *ngIf="s.estado === 'pendiente' || s.estado === 'sugerido' || s.estado === 'cotizacion_rechazada'" (click)="abrirCotizar(s.id)">
+          {{ s.estado === 'cotizacion_rechazada' ? 'Volver a Cotizar' : 'Cotizar' }}
+        </button>
+        <button class="btn btn-success" *ngIf="s.estado !== 'cotizacion_rechazada' && !s.tiene_servicio" (click)="aceptarSolicitud(s.id)">Asignar Técnicos</button>
         <button class="btn btn-danger" *ngIf="s.estado === 'pendiente' || s.estado === 'sugerido'" (click)="rechazarSolicitud(s.id)">Rechazar</button>
       </div>
     </div>

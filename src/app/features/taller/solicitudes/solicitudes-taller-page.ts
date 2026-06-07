@@ -57,7 +57,8 @@ export class SolicitudesTallerPage implements OnChanges, OnInit {
     
     this.tallerServiciosService.listarSolicitudesRecientes(this.tallerId).subscribe({
       next: (data: any) => {
-        this.solicitudes = data;
+        // Ocultar las solicitudes que ya tienen un servicio iniciado
+        this.solicitudes = data.filter((s: any) => !s.tiene_servicio);
         this.isLoading = false;
         this.cdr.detectChanges();
       },
