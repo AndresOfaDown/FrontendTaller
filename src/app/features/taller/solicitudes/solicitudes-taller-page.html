@@ -1,9 +1,23 @@
 <div class="solicitudes-page">
+  <!-- Notificación WebSocket en tiempo real -->
+  <div class="ws-notification" *ngIf="wsNotificacion">
+    <i class="fa-solid fa-bell"></i>
+    <span>{{ wsNotificacion }}</span>
+    <button class="ws-notification-close" (click)="wsNotificacion = null">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+  </div>
+
   <div class="header">
     <h2>Solicitudes de Servicio</h2>
-    <button class="btn btn-secondary" (click)="cargarSolicitudes()" [disabled]="isLoading">
-      <i class="fa-solid fa-rotate-right"></i> Actualizar
-    </button>
+    <div class="header-actions">
+      <span class="ws-status" title="Tiempo real activo">
+        <i class="fa-solid fa-circle ws-status-dot"></i> En vivo
+      </span>
+      <button class="btn btn-secondary" (click)="cargarSolicitudes()" [disabled]="isLoading">
+        <i class="fa-solid fa-rotate-right"></i> Actualizar
+      </button>
+    </div>
   </div>
 
   <div *ngIf="isLoading" class="loading-container">

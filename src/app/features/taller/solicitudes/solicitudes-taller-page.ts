@@ -1,7 +1,9 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, OnDestroy, SimpleChanges, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TallerServiciosService, SolicitudServicioList, TecnicoDisponible, VehiculoDisponible, SolicitudServicioDetalle } from '../../../core/services/taller-servicios.service';
+import { WebSocketService, WsMessage } from '../../../core/services/websocket.service';
+import { Subscription } from 'rxjs';
 import { LoadingSpinner } from '../../../shared/components/loading-spinner/loading-spinner';
 import { Modal } from '../../../shared/components/modal/modal';
 
@@ -12,7 +14,7 @@ import { Modal } from '../../../shared/components/modal/modal';
   templateUrl: './solicitudes-taller-page.html',
   styleUrls: ['./solicitudes-taller-page.scss']
 })
-export class SolicitudesTallerPage implements OnChanges, OnInit {
+export class SolicitudesTallerPage implements OnChanges, OnInit, OnDestroy {
   @Input() tallerId!: number;
 
   solicitudes: SolicitudServicioList[] = [];
@@ -36,21 +38,113 @@ export class SolicitudesTallerPage implements OnChanges, OnInit {
   selectedTecnicoId: number | null = null;
   selectedVehiculoId: number | null = null;
 
+  // WebSocket
+  private wsSubscription: Subscription | null = null;
+  private pingInterval: any = null;
+  wsNotificacion: string | null = null;
+  private notificacionTimeout: any = null;
+
   constructor(
     private tallerServiciosService: TallerServiciosService,
+    private wsService: WebSocketService,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
     if (this.tallerId) {
       this.cargarSolicitudes();
+      this.conectarWebSocket();
     }
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['tallerId'] && this.tallerId && !changes['tallerId'].isFirstChange()) {
       this.cargarSolicitudes();
+      this.conectarWebSocket();
     }
+  }
+
+  ngOnDestroy(): void {
+    this.desconectarWebSocket();
+  }
+
+  /**
+   * Conecta al canal WebSocket del taller para recibir notificaciones en tiempo real.
+   */
+  private conectarWebSocket(): void {
+    this.desconectarWebSocket();
+    if (!this.tallerId) return;
+
+    const channel = `taller/${this.tallerId}`;
+    const token = localStorage.getItem('access_token') || '';
+
+    this.wsSubscription = this.wsService.connect(channel, token).subscribe((mensaje: WsMessage) => {
+      // Ignorar mensajes de conexión y pong
+      if (mensaje.tipo === 'conexion_establecida' || mensaje.tipo === 'pong') return;
+
+      console.log('WS Notificación recibida:', mensaje);
+
+      // Mostrar notificación visual
+      let textoNotificacion = '';
+
+      switch (mensaje.tipo) {
+        case 'nueva_solicitud':
+          textoNotificacion = `📩 Nueva solicitud de servicio recibida`;
+          break;
+        case 'solicitud_cotizada':
+          textoNotificacion = `💰 Cotización enviada - Solicitud #${mensaje['solicitud_id']}`;
+          break;
+        case 'solicitud_rechazada':
+          textoNotificacion = `❌ Solicitud #${mensaje['solicitud_id']} rechazada`;
+          break;
+        case 'cotizacion_respondida':
+          const aceptada = mensaje['aceptada'];
+          textoNotificacion = aceptada
+            ? `✅ Cotización ACEPTADA - Solicitud #${mensaje['solicitud_id']}`
+            : `❌ Cotización RECHAZADA - Solicitud #${mensaje['solicitud_id']}`;
+          break;
+        case 'estado_actualizado':
+          textoNotificacion = `🔄 Servicio #${mensaje['servicio_id']} - ${mensaje['estado_descripcion'] || mensaje['estado']}`;
+          break;
+        default:
+          textoNotificacion = `Actualización: ${mensaje.tipo}`;
+      }
+
+      this.mostrarNotificacion(textoNotificacion);
+
+      // Recargar la lista de solicitudes automáticamente
+      this.cargarSolicitudes();
+    });
+
+    // Ping cada 30 segundos
+    this.pingInterval = setInterval(() => {
+      this.wsService.ping(channel);
+    }, 30000);
+  }
+
+  private desconectarWebSocket(): void {
+    this.wsSubscription?.unsubscribe();
+    this.wsSubscription = null;
+    if (this.pingInterval) {
+      clearInterval(this.pingInterval);
+      this.pingInterval = null;
+    }
+    if (this.tallerId) {
+      this.wsService.disconnect(`taller/${this.tallerId}`);
+    }
+  }
+
+  private mostrarNotificacion(texto: string): void {
+    this.wsNotificacion = texto;
+    this.cdr.detectChanges();
+
+    if (this.notificacionTimeout) {
+      clearTimeout(this.notificacionTimeout);
+    }
+    this.notificacionTimeout = setTimeout(() => {
+      this.wsNotificacion = null;
+      this.cdr.detectChanges();
+    }, 5000);
   }
 
   cargarSolicitudes() {
