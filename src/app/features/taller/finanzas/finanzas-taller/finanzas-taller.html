@@ -1,0 +1,76 @@
+<div class="finanzas-page">
+  <div class="header">
+    <h2>Finanzas y Pagos</h2>
+    <p>Resumen de ingresos de servicios realizados por el taller.</p>
+  </div>
+
+  <div *ngIf="loading" class="loading-container">
+    <app-loading-spinner></app-loading-spinner>
+  </div>
+
+  <div *ngIf="error" class="error-message">
+    {{ error }}
+  </div>
+
+  <ng-container *ngIf="!loading && !error && finanzas">
+    <!-- KPIs -->
+    <div class="kpi-grid">
+      <div class="kpi-card bg-green">
+        <div class="kpi-title">Ingresos Brutos</div>
+        <div class="kpi-value">Bs. {{ finanzas.total_ingresos | number:'1.2-2' }}</div>
+        <div class="kpi-subtitle">Total pagado por clientes</div>
+      </div>
+
+      <div class="kpi-card bg-blue">
+        <div class="kpi-title">Ganancia Neta (90%)</div>
+        <div class="kpi-value">Bs. {{ finanzas.ganancia_neta_taller | number:'1.2-2' }}</div>
+        <div class="kpi-subtitle">Ganancia real del taller</div>
+      </div>
+
+      <div class="kpi-card bg-red">
+        <div class="kpi-title">Comisión Plataforma (10%)</div>
+        <div class="kpi-value">Bs. {{ finanzas.total_comisiones_plataforma | number:'1.2-2' }}</div>
+        <div class="kpi-subtitle">Descuento de la app</div>
+      </div>
+      
+      <div class="kpi-card bg-yellow">
+        <div class="kpi-title">Cobros Pendientes</div>
+        <div class="kpi-value">Bs. {{ finanzas.total_pendiente | number:'1.2-2' }}</div>
+        <div class="kpi-subtitle">Servicios no pagados aún</div>
+      </div>
+    </div>
+
+    <!-- Tabla -->
+    <div class="finanzas-list">
+      <table class="finanzas-table">
+        <thead>
+          <tr>
+            <th>Servicio #</th>
+            <th>Fecha</th>
+            <th>Bruto</th>
+            <th>-10% App</th>
+            <th>+90% Taller</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let element of finanzas.facturas">
+            <td>{{ element.id_servicio }}</td>
+            <td>{{ element.fecha_emision | date:'dd/MM/yyyy HH:mm' }}</td>
+            <td class="text-green font-bold">Bs. {{ element.monto_total | number:'1.2-2' }}</td>
+            <td class="text-red">Bs. {{ element.comision | number:'1.2-2' }}</td>
+            <td class="text-blue font-bold">Bs. {{ element.liquido_taller | number:'1.2-2' }}</td>
+            <td>
+              <span class="estado" [ngClass]="element.estado_pago === 'pagado' ? 'activo' : 'pendiente'">
+                {{ element.estado_pago | uppercase }}
+              </span>
+            </td>
+          </tr>
+          <tr *ngIf="finanzas.facturas.length === 0">
+            <td colspan="6" class="empty">No hay facturas registradas aún.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </ng-container>
+</div>

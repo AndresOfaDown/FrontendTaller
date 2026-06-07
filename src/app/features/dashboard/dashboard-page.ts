@@ -29,11 +29,13 @@ import { ServiciosTallerPage } from '../taller/servicios/servicios-page';
 import { UsuariosPage } from '../sistema/usuarios/usuarios-page';
 import { BitacoraPage } from '../sistema/bitacora/bitacora-page';
 import { FormsModule } from '@angular/forms';
+import { FinanzasTallerComponent } from '../taller/finanzas/finanzas-taller/finanzas-taller';
+import { FinanzasSistemaComponent } from '../sistema/finanzas/finanzas-sistema/finanzas-sistema';
 
 @Component({
   selector: 'app-dashboard-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, Logo, UserAvatar, Tabs, Sidebar, LoadingSpinner, NormalView, SolicitudesTallerPage, VehiculosPage, SolicitudesPage, SolicitudesPendientesPage, EmpleadosPage, TecnicosPage, VehiculosTallerPage, EspecialidadesPage, TalleresAdminPage, CategoriasIncidentesPage, IncidentesPage, ConfiguracionPage, PerfilTallerPage, ServiciosTallerPage, UsuariosPage, BitacoraPage],
+  imports: [CommonModule, FormsModule, Logo, UserAvatar, Tabs, Sidebar, LoadingSpinner, NormalView, SolicitudesTallerPage, VehiculosPage, SolicitudesPage, SolicitudesPendientesPage, EmpleadosPage, TecnicosPage, VehiculosTallerPage, EspecialidadesPage, TalleresAdminPage, CategoriasIncidentesPage, IncidentesPage, ConfiguracionPage, PerfilTallerPage, ServiciosTallerPage, UsuariosPage, BitacoraPage, FinanzasTallerComponent, FinanzasSistemaComponent],
   templateUrl: './dashboard-page.html',
   styleUrls: ['./dashboard-page.scss']
 })
@@ -176,7 +178,8 @@ export class DashboardPage implements OnInit {
         { id: 'servicios', label: 'Gestión de Servicios', icon: 'fa-tools', visible: true },
         { id: 'vehiculos', label: 'Vehículos', icon: 'fa-car', visible: !isMecanico },
         { id: 'tecnicos', label: 'Técnicos', icon: 'fa-users', visible: !isMecanico },
-        { id: 'empleados', label: 'Empleados', icon: 'fa-users', visible: !isMecanico }
+        { id: 'empleados', label: 'Empleados', icon: 'fa-users', visible: !isMecanico },
+        { id: 'finanzas', label: 'Finanzas y Pagos', icon: 'fa-wallet', visible: !isMecanico }
       ];
     } else if (tabId === 'sistema') {
       this.sidebarItems = [
@@ -187,7 +190,8 @@ export class DashboardPage implements OnInit {
         { id: 'incidentes', label: 'Tipos de Incidentes', icon: 'fa-triangle-exclamation', visible: true },
         { id: 'solicitudes-pendientes', label: 'Solicitudes de afiliación', icon: 'fa-clipboard-list', visible: true },
         { id: 'talleres', label: 'Talleres', icon: 'fa-building', visible: true },
-        { id: 'configuracion', label: 'Configurar Criterios', icon: 'fa-cog', visible: true }
+        { id: 'configuracion', label: 'Configurar Criterios', icon: 'fa-cog', visible: true },
+        { id: 'finanzas-globales', label: 'Finanzas Globales', icon: 'fa-chart-line', visible: true }
       ];
     }
   }

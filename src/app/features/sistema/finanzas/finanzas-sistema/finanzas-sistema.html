@@ -1,0 +1,101 @@
+<div class="finanzas-page">
+  <div class="header">
+    <h2>Finanzas Globales</h2>
+    <p>Resumen de comisiones y rendimiento global de la plataforma.</p>
+  </div>
+
+  <div *ngIf="loading" class="loading-container">
+    <app-loading-spinner></app-loading-spinner>
+  </div>
+
+  <div *ngIf="error" class="error-message">
+    {{ error }}
+  </div>
+
+  <ng-container *ngIf="!loading && !error && finanzas">
+    <!-- KPIs Globales -->
+    <div class="kpi-grid">
+      <div class="kpi-card bg-blue">
+        <div class="kpi-title">Ingreso Real Plataforma (10%)</div>
+        <div class="kpi-value">Bs. {{ finanzas.ganancia_total_plataforma | number:'1.2-2' }}</div>
+        <div class="kpi-subtitle">Comisiones netas cobradas</div>
+      </div>
+
+      <div class="kpi-card bg-green">
+        <div class="kpi-title">Volumen Total Procesado</div>
+        <div class="kpi-value">Bs. {{ finanzas.volumen_total_procesado | number:'1.2-2' }}</div>
+        <div class="kpi-subtitle">Costo de todos los servicios</div>
+      </div>
+
+      <div class="kpi-card bg-yellow">
+        <div class="kpi-title">Comisiones Pendientes</div>
+        <div class="kpi-value">Bs. {{ finanzas.cobros_pendientes_globales | number:'1.2-2' }}</div>
+        <div class="kpi-subtitle">Servicios terminados sin pago</div>
+      </div>
+    </div>
+
+    <!-- TABS -->
+    <div class="tabs">
+      <button [class.active]="activeTab === 'rendimiento'" (click)="changeTab('rendimiento')">Rendimiento por Taller</button>
+      <button [class.active]="activeTab === 'transacciones'" (click)="changeTab('transacciones')">Transacciones Recientes</button>
+    </div>
+
+    <!-- RENDIMIENTO POR TALLER -->
+    <div *ngIf="activeTab === 'rendimiento'" class="finanzas-list">
+      <table class="finanzas-table">
+        <thead>
+          <tr>
+            <th>Taller</th>
+            <th>Servicios</th>
+            <th>Volumen (100%)</th>
+            <th>Comisión App (10%)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let element of finanzas.rendimiento_talleres">
+            <td class="font-bold">{{ element.nombre_taller }}</td>
+            <td>{{ element.cantidad_servicios }}</td>
+            <td>Bs. {{ element.volumen_procesado | number:'1.2-2' }}</td>
+            <td class="text-blue font-bold">Bs. {{ element.comision_generada | number:'1.2-2' }}</td>
+          </tr>
+          <tr *ngIf="finanzas.rendimiento_talleres.length === 0">
+            <td colspan="4" class="empty">No hay datos de rendimiento registrados aún.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- TRANSACCIONES RECIENTES -->
+    <div *ngIf="activeTab === 'transacciones'" class="finanzas-list">
+      <table class="finanzas-table">
+        <thead>
+          <tr>
+            <th>Servicio #</th>
+            <th>Fecha</th>
+            <th>Monto Total</th>
+            <th>Comisión App</th>
+            <th>Estado</th>
+            <th>Método</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let element of finanzas.ultimas_transacciones">
+            <td>{{ element.id_servicio }}</td>
+            <td>{{ element.fecha_emision | date:'dd/MM/yyyy HH:mm' }}</td>
+            <td class="text-green">Bs. {{ element.monto_total | number:'1.2-2' }}</td>
+            <td class="text-blue font-bold">Bs. {{ element.comision | number:'1.2-2' }}</td>
+            <td>
+              <span class="estado" [ngClass]="element.estado_pago === 'pagado' ? 'activo' : 'pendiente'">
+                {{ element.estado_pago | uppercase }}
+              </span>
+            </td>
+            <td>{{ element.metodo_pago | uppercase }}</td>
+          </tr>
+          <tr *ngIf="finanzas.ultimas_transacciones.length === 0">
+            <td colspan="6" class="empty">No hay transacciones registradas aún.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </ng-container>
+</div>

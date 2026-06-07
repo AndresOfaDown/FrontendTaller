@@ -24,6 +24,43 @@ export interface FacturaResponse {
   fecha_pago?: string; // ISO datetime
 }
 
+export interface FacturaConServicioResponse {
+  id: number;
+  id_servicio: number;
+  fecha_servicio: string;
+  monto_total: number;
+  comision: number;
+  liquido_taller: number;
+  estado_pago: string;
+  metodo_pago?: string;
+  fecha_emision: string;
+  fecha_pago?: string;
+}
+
+export interface FinanzasTallerResponse {
+  total_ingresos: number;
+  total_comisiones_plataforma: number;
+  ganancia_neta_taller: number;
+  total_pendiente: number;
+  facturas: FacturaConServicioResponse[];
+}
+
+export interface RendimientoTaller {
+  taller_id: number;
+  nombre_taller: string;
+  cantidad_servicios: number;
+  volumen_procesado: number;
+  comision_generada: number;
+}
+
+export interface FinanzasSistemaResponse {
+  ganancia_total_plataforma: number;
+  volumen_total_procesado: number;
+  cobros_pendientes_globales: number;
+  rendimiento_talleres: RendimientoTaller[];
+  ultimas_transacciones: FacturaConServicioResponse[];
+}
+
 // ============================================================
 // SERVICE
 // ============================================================
@@ -63,5 +100,18 @@ export class PagosService {
     return this.http.get<FacturaResponse>(
       `${this.apiUrl}/pagos/servicio/${servicioId}`
     );
+  }
+
+  /**
+   * [ADMIN TALLER] Obtiene las métricas financieras y listado de facturas.
+   */
+  getFinanzasTaller(tallerId: number): Observable<FinanzasTallerResponse> {
+    return this.http.get<FinanzasTallerResponse>(
+      `${this.apiUrl}/pagos/taller/${tallerId}/finanzas`
+    );
+  }
+
+  getFinanzasSistema(): Observable<FinanzasSistemaResponse> {
+    return this.http.get<FinanzasSistemaResponse>(`${this.apiUrl}/pagos/sistema/finanzas`);
   }
 }
