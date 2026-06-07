@@ -76,20 +76,93 @@
 
   <!-- Modal Cotizar -->
   <app-modal
-    title="Cotizar Servicio"
+    title="Detalle y Cotización de Servicio"
     [visible]="showCotizarModal"
     (close)="cerrarModal()">
     
-    <div class="form-group mb-4">
-      <label>Costo Estimado (Bs) *</label>
-      <input type="number" class="form-control" [(ngModel)]="cotizacionMonto" placeholder="Ej: 150">
+    <div *ngIf="isLoadingDetalle" class="loading-detalle text-center my-5">
+      <i class="fa-solid fa-spinner fa-spin fa-2x text-primary"></i>
+      <p class="mt-3 text-muted">Obteniendo todos los detalles del incidente...</p>
     </div>
 
-    <div class="d-flex justify-content-end gap-2 mt-4">
-      <button class="btn btn-secondary" (click)="cerrarModal()">Cancelar</button>
-      <button class="btn btn-primary btn-submit-cotizacion" (click)="confirmarCotizar()" [disabled]="!cotizacionMonto || isSubmitting">
-        <span *ngIf="!isSubmitting">Enviar Cotización</span>
-        <span *ngIf="isSubmitting"><i class="fa-solid fa-spinner fa-spin"></i> Enviando...</span>
+    <div *ngIf="!isLoadingDetalle && solicitudDetalle" class="detalle-cotizacion-wrapper">
+      
+      <div class="detalle-seccion">
+        <div class="seccion-header">
+          <i class="fa-solid fa-car"></i>
+          <h5>Datos del Vehículo</h5>
+        </div>
+        <div class="seccion-content" *ngIf="solicitudDetalle.vehiculo_cliente">
+          <div class="detalle-grid">
+            <div class="detalle-item">
+              <span class="label">Vehículo</span>
+              <span class="value fw-bold">{{ solicitudDetalle.vehiculo_cliente.marca }} {{ solicitudDetalle.vehiculo_cliente.modelo }} ({{ solicitudDetalle.vehiculo_cliente.anio }})</span>
+            </div>
+            <div class="detalle-item">
+              <span class="label">Placa</span>
+              <span class="badge-placa">{{ solicitudDetalle.vehiculo_cliente.matricula }}</span>
+            </div>
+            <div class="detalle-item">
+              <span class="label">Color</span>
+              <span class="value">{{ solicitudDetalle.vehiculo_cliente.color || 'No especificado' }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="seccion-content empty" *ngIf="!solicitudDetalle.vehiculo_cliente">
+          No hay datos del vehículo registrados.
+        </div>
+      </div>
+
+      <div class="detalle-seccion problema-seccion">
+        <div class="seccion-header">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          <h5>Diagnóstico y Problema</h5>
+        </div>
+        <div class="seccion-content">
+          <div class="problema-item" *ngIf="solicitudDetalle.diagnostico">
+            <span class="label">Diagnóstico IA</span>
+            <p class="value-text">{{ solicitudDetalle.diagnostico.descripcion || 'Sin descripción' }}</p>
+            <span class="confianza-badge">Confianza: {{ solicitudDetalle.diagnostico.nivel_confianza | percent }}</span>
+          </div>
+          
+          <div class="problema-item mt-3" *ngIf="solicitudDetalle.descripcion_conductor">
+            <span class="label">Comentario del Conductor</span>
+            <p class="value-text conductor-comment">"{{ solicitudDetalle.descripcion_conductor }}"</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="detalle-seccion evidencias-seccion" *ngIf="solicitudDetalle.evidencias && solicitudDetalle.evidencias.length > 0">
+        <div class="seccion-header">
+          <i class="fa-solid fa-camera"></i>
+          <h5>Evidencias Adjuntas</h5>
+        </div>
+        <div class="seccion-content">
+          <div class="evidencias-grid">
+            <div class="evidencia-item" *ngFor="let ev of solicitudDetalle.evidencias">
+              <img *ngIf="ev.tipo === 'imagen'" [src]="ev.url" alt="Evidencia">
+              <div *ngIf="ev.tipo === 'audio'" class="audio-badge">
+                <i class="fa-solid fa-file-audio"></i> Audio
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="!isLoadingDetalle" class="cotizacion-input-wrapper">
+      <label class="input-label">Monto de la Cotización Estimada</label>
+      <div class="input-container">
+        <div class="currency-symbol">Bs.</div>
+        <input type="number" class="cotizacion-input" [(ngModel)]="cotizacionMonto" placeholder="0.00">
+      </div>
+    </div>
+
+    <div class="modal-actions-custom">
+      <button class="btn btn-secondary-custom" (click)="cerrarModal()">Cancelar</button>
+      <button class="btn btn-primary-custom" (click)="confirmarCotizar()" [disabled]="!cotizacionMonto || isSubmitting || isLoadingDetalle">
+        <span *ngIf="!isSubmitting"><i class="fa-solid fa-paper-plane me-2"></i> Enviar Cotización</span>
+        <span *ngIf="isSubmitting"><i class="fa-solid fa-spinner fa-spin me-2"></i> Enviando...</span>
       </button>
     </div>
   </app-modal>

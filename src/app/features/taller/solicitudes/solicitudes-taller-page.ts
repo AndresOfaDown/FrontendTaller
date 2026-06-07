@@ -1,7 +1,7 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TallerServiciosService, SolicitudServicioList, TecnicoDisponible, VehiculoDisponible } from '../../../core/services/taller-servicios.service';
+import { TallerServiciosService, SolicitudServicioList, TecnicoDisponible, VehiculoDisponible, SolicitudServicioDetalle } from '../../../core/services/taller-servicios.service';
 import { LoadingSpinner } from '../../../shared/components/loading-spinner/loading-spinner';
 import { Modal } from '../../../shared/components/modal/modal';
 
@@ -25,6 +25,8 @@ export class SolicitudesTallerPage implements OnChanges, OnInit {
   isSubmitting = false;
 
   cotizacionMonto: number | null = null;
+  solicitudDetalle: SolicitudServicioDetalle | null = null;
+  isLoadingDetalle = false;
 
   // Data for Selects
   tecnicosDisponibles: TecnicoDisponible[] = [];
@@ -94,12 +96,29 @@ export class SolicitudesTallerPage implements OnChanges, OnInit {
     this.showCotizarModal = false;
     this.selectedSolicitudId = null;
     this.cotizacionMonto = null;
+    this.solicitudDetalle = null;
   }
 
   abrirCotizar(solicitudId: number) {
     this.selectedSolicitudId = solicitudId;
     this.cotizacionMonto = null;
+    this.solicitudDetalle = null;
     this.showCotizarModal = true;
+    this.isLoadingDetalle = true;
+    this.cdr.detectChanges();
+
+    this.tallerServiciosService.obtenerDetalleSolicitud(solicitudId, this.tallerId).subscribe({
+      next: (detalle) => {
+        this.solicitudDetalle = detalle;
+        this.isLoadingDetalle = false;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error al cargar detalle', err);
+        this.isLoadingDetalle = false;
+        this.cdr.detectChanges();
+      }
+    });
   }
 
   confirmarCotizar() {

@@ -218,11 +218,11 @@ export class DashboardPage implements OnInit {
       next: () => {
         localStorage.removeItem('token');
         this.notificationService.showSuccess('Sesión cerrada correctamente');
-        this.router.navigate(['/login']);
+        this.router.navigate(['/']);
       },
       error: () => {
         localStorage.removeItem('token');
-        this.router.navigate(['/login']);
+        this.router.navigate(['/']);
       }
     });
   }
